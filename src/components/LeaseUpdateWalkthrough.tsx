@@ -6,8 +6,6 @@ import {
   ChevronLeft, 
   FileText, 
   ShieldCheck, 
-  Info,
-  X,
   ArrowRight
 } from 'lucide-react';
 

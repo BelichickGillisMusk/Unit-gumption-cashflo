@@ -1,29 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, 
-  Users, 
   ShieldCheck, 
-  Zap, 
   ArrowRight, 
-  BarChart3, 
-  PieChart,
-  Calendar,
-  MessageSquare,
-  CreditCard,
   ChevronRight,
-  Sparkles,
-  MapPin,
-  Building2,
-  Key,
-  FileText,
-  TrendingUp,
   LayoutDashboard,
-  Bell,
-  Settings,
-  Smartphone,
-  Lock,
-  Globe
+  Smartphone
 } from 'lucide-react';
 
 interface TourStep {

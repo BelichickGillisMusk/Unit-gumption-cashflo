@@ -6,7 +6,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ChevronRight, 
-  MessageSquare, 
   User, 
   Shield, 
   Hammer,

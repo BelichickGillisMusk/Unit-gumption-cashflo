@@ -2,13 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { 
   Building2, 
-  Users, 
   CreditCard, 
   AlertCircle, 
   CheckCircle2, 
   Clock,
   Search,
-  Filter,
   Plus,
   MoreHorizontal,
   MessageSquare,
@@ -113,11 +111,7 @@ export const RentRollDashboard: React.FC = () => {
   const [leftPanelWidth, setLeftPanelWidth] = useState(50); // percentage
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [cookieStatus, setCookieStatus] = useState<'checking' | 'active' | 'blocked'>('checking');
-  const [lastBankUpload, setLastBankUpload] = useState<string | null>(null);
-  const [isBankModalOpen, setIsBankModalOpen] = useState(false);
-  const [bankMatches, setBankMatches] = useState<any[]>([]);
-  const bankInputRef = useRef<HTMLInputElement>(null);
+  const [, setCookieStatus] = useState<'checking' | 'active' | 'blocked'>('checking');
   const [user, setUser] = useState<User | null>(null);
   const [property, setProperty] = useState<Property | null>(null);
   const [isEditingUnit, setIsEditingUnit] = useState(false);
@@ -231,19 +225,6 @@ export const RentRollDashboard: React.FC = () => {
     }
   };
 
-  const handleAddUnit = () => {
-    setConfirmState({
-      isOpen: true,
-      title: 'Add New Unit',
-      message: 'Are you sure you want to initialize a new unit entry? This will create a vacant record in the system.',
-      type: 'info',
-      onConfirm: () => {
-        console.log('Adding unit...');
-        // In a real app, this would be a POST request
-      }
-    });
-  };
-
   const handleMarkOverdue = (unitId: number) => {
     const unit = data.find(u => u.id === unitId);
     if (!unit) return;
@@ -314,43 +295,6 @@ Are you absolutely sure you want to proceed?`,
     } catch (error) {
       console.error("Failed to log violation:", error);
     }
-  };
-
-  const handleBankCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const text = event.target?.result as string;
-      const rows = text.split('\n').map(row => row.split(','));
-      
-      // Simple fuzzy matching logic for demo purposes
-      // In a real app, this would be more robust
-      const matches = data.map(unit => {
-        const found = rows.find(row => 
-          row.some(cell => cell.toLowerCase().includes(unit.tenant_name?.toLowerCase() || ''))
-        );
-        return {
-          unit,
-          matched: !!found,
-          amount: found ? found.find(cell => !isNaN(parseFloat(cell))) : null,
-          date: found ? found[0] : null
-        };
-      }).filter(m => m.matched);
-
-      setBankMatches(matches);
-      setIsBankModalOpen(true);
-      setLastBankUpload(new Date().toLocaleString());
-    };
-    reader.readAsText(file);
-  };
-
-  const applyBankMatches = async () => {
-    // In a real app, this would send updates to the server
-    setIsBankModalOpen(false);
-    fetchData();
-    alert(`Successfully processed ${bankMatches.length} payments from CHASE bank.`);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1349,65 +1293,6 @@ Are you absolutely sure you want to proceed?`,
         </div>
       )}
 
-      {/* Bank Upload Modal */}
-      {isBankModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-2xl bg-app-card border border-app-border rounded-[2.5rem] overflow-hidden shadow-2xl"
-          >
-            <div className="p-8 border-b border-app-border flex items-center justify-between bg-app-text/[0.02]">
-              <div>
-                <h3 className="text-2xl font-black text-app-text tracking-tighter uppercase">CHASE Bank Import Results</h3>
-                <p className="text-app-text/40 font-mono text-[10px] uppercase tracking-widest mt-1">Fuzzy Match Engine Active</p>
-              </div>
-              <button onClick={() => setIsBankModalOpen(false)} className="text-app-text/30 hover:text-app-text">
-                <Plus className="w-8 h-8 rotate-45" />
-              </button>
-            </div>
-
-            <div className="p-8 space-y-6 max-h-[60vh] overflow-y-auto">
-              {bankMatches.length > 0 ? (
-                <div className="space-y-4">
-                  {bankMatches.map((match, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-app-text/5 border border-app-border flex items-center justify-between">
-                      <div>
-                        <div className="text-sm font-bold text-app-text">Unit #{match.unit.unit_number} — {match.unit.tenant_name}</div>
-                        <div className="text-[10px] text-app-text/40 uppercase tracking-widest">Matched via Description: {match.date}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-black text-app-accent">${match.amount}</div>
-                        <div className="text-[10px] text-app-text/30 uppercase tracking-widest">Confidence: HIGH</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 space-y-4">
-                  <AlertCircle className="w-12 h-12 text-app-text/20 mx-auto" />
-                  <p className="text-app-text/40">No matches found in the uploaded CSV.</p>
-                </div>
-              )}
-            </div>
-
-            <div className="p-8 border-t border-app-border bg-app-text/[0.02] flex justify-end gap-4">
-              <button 
-                onClick={() => setIsBankModalOpen(false)}
-                className="px-6 py-3 text-app-text/40 font-bold hover:text-app-text transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={applyBankMatches}
-                className="px-8 py-3 bg-app-accent text-white font-black rounded-xl hover:opacity-90 transition-all shadow-lg shadow-app-accent/20"
-              >
-                Apply to Rent Roll
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
     </div>
   );
 };

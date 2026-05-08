@@ -11,9 +11,6 @@ import {
   Search,
   Plus,
   Eye,
-  User,
-  Hash,
-  Calendar,
   Info,
   Camera,
   X
@@ -104,7 +101,7 @@ export const AdminLegalLog: React.FC = () => {
   const [cameras, setCameras] = useState<SecurityCamera[]>([]);
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [selectedAuditNotice, setSelectedAuditNotice] = useState<Notice | null>(null);

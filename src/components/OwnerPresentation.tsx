@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   ChevronRight, 
   ChevronLeft, 
   ShieldCheck, 
   Zap, 
-  TrendingUp, 
   Users, 
-  MessageSquare, 
   CreditCard,
   BarChart3,
   Wrench,

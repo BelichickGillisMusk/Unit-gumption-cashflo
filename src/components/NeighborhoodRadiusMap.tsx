@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Train, Hospital, TreePine, Coffee } from 'lucide-react';
+import { Train, Hospital, TreePine, Coffee } from 'lucide-react';
 
 const landmarks = [
   { name: 'Mosswood Park', dist: 0.1, angle: -45, icon: TreePine },

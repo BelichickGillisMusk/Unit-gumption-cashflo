@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'motion/react';
 import { Wrench, Clock, CheckCircle2, AlertCircle, Smartphone, Zap } from 'lucide-react';
 

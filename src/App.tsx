@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   TrendingUp, 
@@ -6,13 +6,6 @@ import {
   ShieldCheck, 
   Zap, 
   ArrowRight, 
-  BarChart3, 
-  PieChart as PieChartIcon,
-  Calendar,
-  MessageSquare,
-  CreditCard,
-  ChevronRight,
-  Sparkles,
   MapPin,
   Package,
   Coffee,
@@ -21,7 +14,6 @@ import {
   TreePine,
   Camera,
   History,
-  Info,
   Menu,
   X,
   Share2,
@@ -38,12 +30,9 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
-import { ShimmerBackground, ShimmerEffect } from './components/VisualEffects';
+import { ShimmerBackground } from './components/VisualEffects';
 import { AIPropertyVisualizer } from './components/AIImageGenerator';
 import { RentRollDashboard } from './components/RentRollDashboard';
 import { MaintenanceModule } from './components/MaintenanceModule';
@@ -75,14 +64,8 @@ const revenueData = [
   { month: 'Jun', revenue: 72000, occupancy: 98 },
 ];
 
-const distributionData = [
-  { name: 'Residential', value: 65, color: '#A64B4B' },
-  { name: 'Commercial', value: 25, color: '#7A3333' },
-  { name: 'Short-term', value: 10, color: '#D18E8E' },
-];
-
 export default function App() {
-  const { theme } = useTheme();
+  useTheme();
   const [view, setView] = useState<'hub' | 'admin' | 'tenant'>('hub');
   const [adminTab, setAdminTab] = useState<'portfolio' | 'rent-roll' | 'maintenance' | 'marketing' | 'community' | 'ceo' | 'sfplus' | 'marketmax' | 'vendors' | 'concerns'>('portfolio');
   const [rentRollUnlocked, setRentRollUnlocked] = useState(false);
@@ -426,7 +409,7 @@ export default function App() {
                 {[
                   { title: 'On-Site Laundry', desc: 'Modern, high-capacity machines just steps from your door.', icon: Zap },
                   { title: 'Amazon Hub', desc: 'Never miss a delivery with our secure, on-site package lockers.', icon: Package },
-                ].map((item, i) => (
+                ].map((item) => (
                   <div key={item.title} className="p-12 rounded-[3rem] bg-app-card border-2 border-app-border hover:border-app-accent/30 transition-all group shadow-sm hover:shadow-2xl hover:-translate-y-2 duration-500">
                     <div className="w-16 h-16 rounded-2xl bg-app-accent/10 flex items-center justify-center mb-10 group-hover:bg-app-accent/20 transition-colors">
                       <item.icon className="w-8 h-8 text-app-accent group-hover:text-app-accent transition-colors" />

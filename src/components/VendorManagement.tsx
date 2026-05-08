@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Users, Phone, Mail, Calendar, ShieldCheck, Search, Plus, ExternalLink } from 'lucide-react';
 

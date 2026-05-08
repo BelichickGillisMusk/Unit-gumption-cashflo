@@ -12,7 +12,7 @@ interface LocationInfo {
 export const MarketingModule: React.FC = () => {
   const [locations, setLocations] = useState<LocationInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   const fetchProximityData = async () => {
     try {

@@ -340,14 +340,14 @@ if (propertyCount.count === 0) {
   ).lastInsertRowid;
 
   // Property 3: Berkeley Lofts
-  const berkeleyId = insertProperty.run(
+  insertProperty.run(
     "Berkeley Lofts", 
     "2100 University Ave, Berkeley, CA 94704", 
     "Downtown Berkeley",
     "Friday",
     "Every Tuesday",
     "https://images.unsplash.com/photo-1600607687940-467f4b637779?q=80&w=1200"
-  ).lastInsertRowid;
+  );
 
   const insertUser = db.prepare("INSERT INTO users (email, role, name) VALUES (?, ?, ?)");
   insertUser.run("admin@mobilecarbsmoketest.com", "OWNER", "Owner");
