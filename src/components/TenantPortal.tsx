@@ -517,10 +517,11 @@ export const TenantPortal = () => {
                       {[
                         { id: 'dashboard', label: 'Balance', icon: CreditCard, color: 'bg-ruby/10 text-ruby' },
                         { id: 'maintenance', label: 'Maintenance', icon: Wrench, color: 'bg-[#FD5A1E]/10 text-[#FD5A1E]' },
-                        { id: 'dashboard', label: 'Notices', icon: Bell, color: 'bg-[#FD5A1E]/10 text-[#FD5A1E]' },
+                        { id: 'info-nook', label: 'Info Nook', icon: Info, color: 'bg-ruby/10 text-ruby' },
+                        { id: 'support', label: 'Support', icon: MessageSquare, color: 'bg-[#FD5A1E]/10 text-[#FD5A1E]' },
                       ].map((link) => (
                         <button
-                          key={link.label}
+                          key={link.id}
                           onClick={() => {
                             setActiveTab(link.id as any);
                             setSelectedMailbox(null);
