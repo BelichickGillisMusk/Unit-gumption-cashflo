@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { CreditCard, Upload, CheckCircle, XCircle, Search, FileSpreadsheet, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CreditCard, CheckCircle, Search, FileSpreadsheet, ArrowRight, ShieldCheck } from 'lucide-react';
 
 interface Transaction {
   id: number;

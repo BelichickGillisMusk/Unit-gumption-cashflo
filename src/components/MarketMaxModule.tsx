@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { TrendingUp, DollarSign, PieChart, ArrowUpRight, ArrowDownRight, Info, Zap, Calculator } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import { useState, useEffect } from 'react';
+import { TrendingUp, PieChart, ArrowUpRight, Info, Zap, Calculator } from 'lucide-react';
 
 interface Projection {
   id: number;

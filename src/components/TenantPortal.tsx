@@ -14,7 +14,6 @@ import {
   AlertCircle, 
   Info,
   Send,
-  Plus,
   ChevronRight,
   Smartphone,
   Mail,
@@ -22,7 +21,6 @@ import {
   Cpu,
   ShieldAlert,
   FileWarning,
-  Gavel,
   Wrench,
   LayoutGrid,
   MapPin,
@@ -35,7 +33,7 @@ import {
 
 import { LeaseUpdateWalkthrough } from './LeaseUpdateWalkthrough';
 import { db, auth, googleProvider } from '../firebase';
-import { doc, getDoc, setDoc, onSnapshot, collection } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot, collection } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 
 interface UserSettings {
@@ -96,11 +94,11 @@ export const TenantPortal = () => {
   const [securityEvents, setSecurityEvents] = useState<SecurityEvent[]>([]);
   const [constructionUpdates, setConstructionUpdates] = useState<ConstructionUpdate[]>([]);
   const [notices, setNotices] = useState<TenantNotice[]>([]);
-  const [violations, setViolations] = useState<LeaseViolation[]>([]);
+  const [, setViolations] = useState<LeaseViolation[]>([]);
   const [maintenanceRequests, setMaintenanceRequests] = useState<any[]>([]);
   const [leaseUpdate, setLeaseUpdate] = useState<LeaseUpdate | null>(null);
   const [showWalkthrough, setShowWalkthrough] = useState(false);
-  const [selectedNotice, setSelectedNotice] = useState<TenantNotice | null>(null);
+  const [, setSelectedNotice] = useState<TenantNotice | null>(null);
   const [referralData, setReferralData] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportText, setReportText] = useState('');
@@ -112,7 +110,7 @@ export const TenantPortal = () => {
   const [rentStatus, setRentStatus] = useState<{ amount: number, last_payment: string, status: string } | null>(null);
   const [mailboxCustomizations, setMailboxCustomizations] = useState<Record<string, { color: string }>>({});
   const [selectedMailbox, setSelectedMailbox] = useState<string | null>(null);
-  const [currentUserUnit, setCurrentUserUnit] = useState<string>('101'); // Mocked for demo
+  const [currentUserUnit] = useState<string>('101'); // Mocked for demo
 
   const units = [
     '101', '102', '103', '104', '105', '106',
@@ -167,6 +165,10 @@ export const TenantPortal = () => {
     
     // Fetch rent status
     fetch('/api/tenant-rent/1').then(res => res.json()).then(setRentStatus);
+
+    return () => {
+      unsubscribeAuth();
+    };
   }, []);
 
   const fetchLeaseUpdate = () => {
@@ -220,17 +222,6 @@ export const TenantPortal = () => {
     if (notice.status === 'Sent') {
       await fetch(`/api/tenant-notices/${notice.id}/view`, { method: 'PATCH' });
       fetch('/api/tenant-notices/1').then(res => res.json()).then(setNotices);
-    }
-  };
-
-  const handleAcknowledgeNotice = async (noticeId: number) => {
-    setIsSubmitting(true);
-    try {
-      await fetch(`/api/tenant-notices/${noticeId}/acknowledge`, { method: 'PATCH' });
-      fetch('/api/tenant-notices/1').then(res => res.json()).then(setNotices);
-      setSelectedNotice(null);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -517,10 +508,11 @@ export const TenantPortal = () => {
                       {[
                         { id: 'dashboard', label: 'Balance', icon: CreditCard, color: 'bg-ruby/10 text-ruby' },
                         { id: 'maintenance', label: 'Maintenance', icon: Wrench, color: 'bg-[#FD5A1E]/10 text-[#FD5A1E]' },
-                        { id: 'dashboard', label: 'Notices', icon: Bell, color: 'bg-[#FD5A1E]/10 text-[#FD5A1E]' },
+                        { id: 'info-nook', label: 'Info Nook', icon: Info, color: 'bg-ruby/10 text-ruby' },
+                        { id: 'support', label: 'Support', icon: MessageSquare, color: 'bg-[#FD5A1E]/10 text-[#FD5A1E]' },
                       ].map((link) => (
                         <button
-                          key={link.label}
+                          key={link.id}
                           onClick={() => {
                             setActiveTab(link.id as any);
                             setSelectedMailbox(null);

@@ -2,8 +2,6 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { 
   Zap, 
-  ShieldCheck, 
-  TrendingUp, 
   MessageSquare, 
   Image as ImageIcon, 
   Clock, 

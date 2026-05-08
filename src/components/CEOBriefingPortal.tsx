@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FileText, Scale, TrendingUp, ChevronRight, Plus, Download, Search, Info, Sparkles, Wand2, X, Copy, Check, FileDown, Save, AlertTriangle } from 'lucide-react';
+import { FileText, Scale, TrendingUp, ChevronRight, Plus, Download, Info, Sparkles, Wand2, X, Copy, Check, FileDown, Save, AlertTriangle } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 

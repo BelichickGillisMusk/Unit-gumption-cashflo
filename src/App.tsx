@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   TrendingUp, 
@@ -6,23 +6,14 @@ import {
   ShieldCheck, 
   Zap, 
   ArrowRight, 
-  BarChart3, 
-  PieChart as PieChartIcon,
-  Calendar,
-  MessageSquare,
-  CreditCard,
-  ChevronRight,
-  Sparkles,
   MapPin,
   Package,
-  Wind,
   Coffee,
   Train,
   Hospital,
   TreePine,
   Camera,
   History,
-  Info,
   Menu,
   X,
   Share2,
@@ -39,12 +30,9 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
-import { ShimmerBackground, ShimmerEffect } from './components/VisualEffects';
+import { ShimmerBackground } from './components/VisualEffects';
 import { AIPropertyVisualizer } from './components/AIImageGenerator';
 import { RentRollDashboard } from './components/RentRollDashboard';
 import { MaintenanceModule } from './components/MaintenanceModule';
@@ -76,19 +64,14 @@ const revenueData = [
   { month: 'Jun', revenue: 72000, occupancy: 98 },
 ];
 
-const distributionData = [
-  { name: 'Residential', value: 65, color: '#A64B4B' },
-  { name: 'Commercial', value: 25, color: '#7A3333' },
-  { name: 'Short-term', value: 10, color: '#D18E8E' },
-];
-
 export default function App() {
-  const { theme } = useTheme();
+  useTheme();
   const [view, setView] = useState<'hub' | 'admin' | 'tenant'>('hub');
   const [adminTab, setAdminTab] = useState<'portfolio' | 'rent-roll' | 'maintenance' | 'marketing' | 'community' | 'ceo' | 'sfplus' | 'marketmax' | 'vendors' | 'concerns'>('portfolio');
   const [rentRollUnlocked, setRentRollUnlocked] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showOwnerVision, setShowOwnerVision] = useState(false);
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
 
   return (
     <div className={`min-h-screen font-sans selection:bg-app-accent/30 transition-colors duration-700`}>
@@ -189,9 +172,8 @@ export default function App() {
               {view === 'hub' ? (
                 <>
                   <a href="#about" onClick={() => setIsMenuOpen(false)}>About</a>
-                  <a href="#amenities" onClick={() => setIsMenuOpen(false)}>Amenities</a>
                   <a href="#neighborhood" onClick={() => setIsMenuOpen(false)}>Neighborhood</a>
-                  <a href="#gallery" onClick={() => setIsMenuOpen(false)}>Gallery</a>
+                  <a href="#maintenance-flow" onClick={() => setIsMenuOpen(false)}>Maintenance</a>
                 </>
               ) : (
                 <>
@@ -265,14 +247,21 @@ export default function App() {
                     transition={{ duration: 1.5, delay: 0.2 }}
                     className="hidden lg:block relative h-[600px] w-full rounded-[3rem] overflow-hidden shadow-2xl border border-white/10"
                   >
-                    <img 
-                      src="https://images.unsplash.com/photo-1560662105-57f8ad6ae2d1?q=80&w=1000&auto=format&fit=crop" 
-                      alt="Historic Oakland Building" 
-                      className="w-full h-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A2D] via-transparent to-transparent opacity-80"></div>
-                    <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
+                    {heroImageFailed ? (
+                      <div className="w-full h-full flex items-center justify-center bg-[#0B1A2D]">
+                        <NeighborhoodRadiusMap />
+                      </div>
+                    ) : (
+                      <img
+                        src="https://images.unsplash.com/photo-1560662105-57f8ad6ae2d1?q=80&w=1000&auto=format&fit=crop"
+                        alt="Vintage three-story residential building exterior, evoking the historic Oakland architecture of 3875 Ruby Street."
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                        onError={() => setHeroImageFailed(true)}
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1A2D] via-transparent to-transparent opacity-80 pointer-events-none"></div>
+                    <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-none">
                       <div>
                         <div className="text-[10px] font-bold text-app-accent uppercase tracking-widest mb-2">The Ruby Building</div>
                         <div className="text-2xl font-serif italic text-white">Historic Charm. Modern Living.</div>
@@ -420,7 +409,7 @@ export default function App() {
                 {[
                   { title: 'On-Site Laundry', desc: 'Modern, high-capacity machines just steps from your door.', icon: Zap },
                   { title: 'Amazon Hub', desc: 'Never miss a delivery with our secure, on-site package lockers.', icon: Package },
-                ].map((item, i) => (
+                ].map((item) => (
                   <div key={item.title} className="p-12 rounded-[3rem] bg-app-card border-2 border-app-border hover:border-app-accent/30 transition-all group shadow-sm hover:shadow-2xl hover:-translate-y-2 duration-500">
                     <div className="w-16 h-16 rounded-2xl bg-app-accent/10 flex items-center justify-center mb-10 group-hover:bg-app-accent/20 transition-colors">
                       <item.icon className="w-8 h-8 text-app-accent group-hover:text-app-accent transition-colors" />

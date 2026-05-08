@@ -2,13 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   MessageSquare, 
-  Clock, 
-  CheckCircle2, 
   AlertCircle, 
   ChevronRight, 
-  User, 
   XCircle,
-  ArrowRight,
   HelpCircle,
   Lightbulb,
   MessageCircle

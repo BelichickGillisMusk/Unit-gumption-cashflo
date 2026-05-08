@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Package, ShieldCheck, Zap, Wind, Cpu, Info, X } from 'lucide-react';
+import { Package, ShieldCheck, Zap, Wind, Cpu, X } from 'lucide-react';
 
 const hotspots = [
   {
