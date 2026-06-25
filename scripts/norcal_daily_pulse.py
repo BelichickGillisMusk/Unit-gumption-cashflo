@@ -4,7 +4,8 @@ NorCal CARB Mobile — daily order-flow pulse.
 
 Purpose: the heartbeat that was missing when the Make scenarios died silently in
 June. Once a day this:
-  1. Pulls the last 24h (and YTD) of Squarespace orders.
+  1. Pulls the last 24h of Squarespace orders (filtered to genuinely NEW
+     orders by createdOn — see fetch note below).
   2. Posts a short summary to Slack + email so SILENCE can't hide a failure.
   3. Flags JMB Construction (msousa@jmbconstruction.com) activity.
   4. Exits NON-ZERO on any hard failure, so GitHub Actions' native failure
@@ -85,11 +86,26 @@ def summarize(orders):
     return {"count": len(orders), "revenue": round(total, 2), "jmb": jmb}
 
 
+def created_in_window(order, after, before):
+    """True if the order was CREATED within [after, before).
+
+    Squarespace's List Orders `modifiedAfter` filter keys off modifiedOn, so the
+    API returns OLD orders that were merely edited (fulfilled/refunded) in the
+    window. We re-filter by createdOn so an edit to a stale order can't mask a
+    real intake outage on a day with no new sales.
+    """
+    raw = order.get("createdOn")
+    if not raw:
+        return False
+    try:
+        created = dt.datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        return False
+    return after <= created < before
+
+
 # ---------------------------------------------------------------- Alerting
 def post_slack(webhook, text):
-    if not webhook:
-        log("SLACK_WEBHOOK_URL not set — skipping Slack post.")
-        return
     body = json.dumps({"text": text}).encode()
     req = request.Request(
         webhook, data=body, headers={"Content-Type": "application/json"}
@@ -102,9 +118,6 @@ def post_slack(webhook, text):
 def send_email(subject, body):
     host = env("SMTP_HOST")
     to = env("ALERT_EMAIL_TO")
-    if not host or not to:
-        log("SMTP_HOST/ALERT_EMAIL_TO not set — skipping email.")
-        return
     user = env("SMTP_USER")
     pw = env("SMTP_PASS")
     sender = env("SMTP_FROM") or user
@@ -122,17 +135,40 @@ def send_email(subject, body):
 
 
 def alert(text, ok=True):
-    """Best-effort fan-out to every configured channel. Never raises."""
+    """Fan out to every CONFIGURED channel.
+
+    Returns True when there was nothing to deliver (no channel configured) or at
+    least one configured channel delivered. Returns False only when one or more
+    channels are configured but EVERY one failed to deliver — that is itself a
+    silent failure, so callers must fail the run on a False here rather than let
+    the workflow go green with zero notifications.
+    """
     prefix = "✅" if ok else "🚨"
     subject = f"{prefix} NorCal order pulse — {'OK' if ok else 'FAILURE'}"
-    for fn, label in (
-        (lambda: post_slack(env("SLACK_WEBHOOK_URL"), f"{prefix} {text}"), "slack"),
-        (lambda: send_email(subject, text), "email"),
-    ):
+    channels = []
+    if env("SLACK_WEBHOOK_URL"):
+        channels.append(
+            ("slack", lambda: post_slack(env("SLACK_WEBHOOK_URL"), f"{prefix} {text}"))
+        )
+    if env("SMTP_HOST") and env("ALERT_EMAIL_TO"):
+        channels.append(("email", lambda: send_email(subject, text)))
+
+    if not channels:
+        log("No alert channels configured — printing summary only:")
+        log(text)
+        return True
+
+    delivered = 0
+    for label, fn in channels:
         try:
             fn()
-        except Exception as e:  # noqa: BLE001 — alerting must not crash the run
+            delivered += 1
+        except Exception as e:  # noqa: BLE001 — try every channel before giving up
             log(f"WARN: {label} alert failed: {e}")
+    if delivered == 0:
+        log("CRITICAL: all configured alert channels failed to deliver.")
+        return False
+    return True
 
 
 # ---------------------------------------------------------------- Main
@@ -148,30 +184,35 @@ def main():
             "not be checked. Add the secret to enable the live heartbeat."
         )
         log(msg)
-        alert(msg, ok=True)
-        # Not a hard failure — config gap, not a system outage.
-        return 0
+        # Config gap, not a system outage — but if alert channels ARE set and
+        # all fail, that's a real silent failure, so fail the run.
+        return 0 if alert(msg, ok=True) else 1
 
     try:
-        day = summarize(fetch_orders(api_key, iso(day_ago), iso(now)))
+        fetched = fetch_orders(api_key, iso(day_ago), iso(now))
     except error.HTTPError as e:
         body = e.read().decode(errors="replace")[:300]
         raise RuntimeError(f"Squarespace API HTTP {e.code}: {body}") from e
 
+    # Keep only orders genuinely CREATED in the window (modifiedAfter returns
+    # edited-but-old orders too) so the zero-order warning can't be masked.
+    new_orders = [o for o in fetched if created_in_window(o, day_ago, now)]
+    day = summarize(new_orders)
+
     weekday = now.weekday() < 5  # Mon–Fri
     lines = [
         f"NorCal order pulse for {now:%Y-%m-%d %H:%M UTC}",
-        f"• Last 24h: {day['count']} orders, ${day['revenue']:,.2f}",
+        f"• New orders (last 24h): {day['count']}, ${day['revenue']:,.2f}",
         f"• JMB Construction orders in window: {day['jmb']}",
     ]
     if day["count"] == 0 and weekday:
         lines.append(
-            "⚠️ Zero orders in 24h on a weekday — verify Squarespace + intake "
+            "⚠️ Zero NEW orders in 24h on a weekday — verify Squarespace + intake "
             "are healthy (this is the exact pattern that hid the June outage)."
         )
-    alert("\n".join(lines), ok=True)
+    delivered = alert("\n".join(lines), ok=True)
     log("Done.")
-    return 0
+    return 0 if delivered else 1
 
 
 if __name__ == "__main__":

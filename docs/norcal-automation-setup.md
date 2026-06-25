@@ -17,14 +17,19 @@ This job fixes the two real gaps:
 - **Alerts where you actually look** — Slack + `bryan@norcalcarbmobile.com`,
   plus GitHub's own failure email as a backstop.
 
-## What it does each morning (~7:23am Pacific)
-1. Pulls the last 24h of Squarespace orders (count + revenue).
+## What it does each morning (14:23 UTC)
+Cron is always UTC and does **not** shift with daylight saving, so this lands at
+~7:23am Pacific in summer (PDT) and ~6:23am in winter (PST).
+
+1. Pulls the last 24h of Squarespace orders and keeps only the ones genuinely
+   **created** in that window (count + revenue).
 2. Flags JMB Construction (`msousa@jmbconstruction.com`) activity.
-3. Posts a one-line summary to Slack + email.
-4. Warns if there were **zero orders on a weekday** (the exact pattern that hid
-   the June outage).
-5. **Fails the workflow loudly** on any hard error, so you get a second alert
-   from GitHub Actions itself.
+3. Posts a short summary (a few lines) to Slack + email.
+4. Warns if there were **zero new orders on a weekday** (the exact pattern that
+   hid the June outage).
+5. **Fails the workflow loudly** on any hard error — and also if every
+   configured alert channel fails to deliver (so the run can't go green with
+   zero notifications) — giving you a second alert from GitHub Actions itself.
 
 Only counts/totals ever leave the job — no customer PII is posted to Slack,
 email, or logs.

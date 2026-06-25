@@ -7,7 +7,9 @@ name: NorCal Daily Order Pulse
 
 on:
   schedule:
-    # 14:23 UTC ≈ 7:23am Pacific. Off-:00 minute on purpose (see Actions docs).
+    # 14:23 UTC. Cron is ALWAYS UTC and does NOT shift with daylight saving —
+    # that's ~07:23 Pacific in summer (PDT) and ~06:23 in winter (PST).
+    # Off-:00 minute on purpose (see Actions docs).
     - cron: "23 14 * * *"
   workflow_dispatch: {} # allow manual "Run workflow" from the Actions tab
 
