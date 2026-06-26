@@ -1,0 +1,50 @@
+name: NorCal Daily Order Pulse
+
+# The heartbeat that was missing when the Make scenarios died silently.
+# Runs on GitHub's servers 24/7 — no laptop or Claude session required.
+# Posts a daily summary to Slack + email, and fails LOUDLY if the run errors,
+# so an absence of work can never again look identical to success.
+
+on:
+  schedule:
+    # 14:23 UTC. Cron is ALWAYS UTC and does NOT shift with daylight saving —
+    # that's ~07:23 Pacific in summer (PDT) and ~06:23 in winter (PST).
+    # Off-:00 minute on purpose (see Actions docs).
+    - cron: "23 14 * * *"
+  workflow_dispatch: {} # allow manual "Run workflow" from the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run daily pulse
+        env:
+          SQUARESPACE_API_KEY: ${{ secrets.SQUARESPACE_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+        run: python scripts/norcal_daily_pulse.py
+
+      - name: Backstop Slack alert if the job itself failed
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -sS -X POST -H 'Content-Type: application/json' \
+              --data '{"text":"🚨 NorCal Daily Pulse workflow failed before it could self-report. Check the Actions run logs."}' \
+              "$SLACK_WEBHOOK_URL" || true
+          fi
