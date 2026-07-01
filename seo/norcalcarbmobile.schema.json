@@ -1,0 +1,55 @@
+{
+  "@context": "https://schema.org",
+  "@type": "AutomotiveBusiness",
+  "@id": "https://www.norcalcarbmobile.com/#business",
+  "name": "NorCal CARB Mobile LLC- CARB Clean Truck Check J1667",
+  "legalName": "NorCal CARB Mobile LLC",
+  "alternateName": "NorCal CARB Mobile",
+  "description": "Mobile CARB Clean Truck Check (HD/IM) testing — OBD and OVI / SAE J1667 smoke opacity — for heavy-duty diesel trucks, motorhomes, and fleets across Northern California. We come to you.",
+  "url": "https://www.norcalcarbmobile.com/",
+  "telephone": "+1-916-890-4427",
+  "priceRange": "$75-$300",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "4810 7th Ave",
+    "addressLocality": "Sacramento",
+    "addressRegion": "CA",
+    "postalCode": "95820",
+    "addressCountry": "US"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 38.539, "longitude": -121.476 },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "00:00",
+      "closes": "23:59"
+    }
+  ],
+  "areaServed": [
+    { "@type": "AdministrativeArea", "name": "Sacramento County" },
+    { "@type": "AdministrativeArea", "name": "Placer County" },
+    { "@type": "AdministrativeArea", "name": "El Dorado County" },
+    { "@type": "AdministrativeArea", "name": "Yolo County" },
+    { "@type": "AdministrativeArea", "name": "San Joaquin County" },
+    { "@type": "AdministrativeArea", "name": "Stanislaus County" },
+    { "@type": "AdministrativeArea", "name": "Solano County" },
+    { "@type": "AdministrativeArea", "name": "Contra Costa County" },
+    { "@type": "AdministrativeArea", "name": "Alameda County" },
+    { "@type": "AdministrativeArea", "name": "Santa Clara County" },
+    { "@type": "AdministrativeArea", "name": "Butte County" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "CARB Clean Truck Check services",
+    "itemListElement": [
+      { "@type": "Offer", "priceCurrency": "USD", "price": "75", "itemOffered": { "@type": "Service", "name": "OBD Test (2013+ engines)" } },
+      { "@type": "Offer", "priceCurrency": "USD", "price": "250", "itemOffered": { "@type": "Service", "name": "OVI / SAE J1667 Smoke Opacity Test (2012 & older)" } },
+      { "@type": "Offer", "priceCurrency": "USD", "price": "300", "itemOffered": { "@type": "Service", "name": "Motorhome / RV Compliance Test" } }
+    ]
+  },
+  "sameAs": [
+    "https://www.yelp.com/biz/norcal-carb-mobile-sacramento",
+    "https://www.linkedin.com/company/norcal-carb-mobile"
+  ]
+}
