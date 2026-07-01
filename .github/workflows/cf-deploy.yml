@@ -1,0 +1,36 @@
+name: Deploy Cloudflare (schema + SSL + purge)
+
+# MANUAL ONLY — never auto-deploys. Runs against the LIVE Cloudflare zone only
+# when someone triggers it from the Actions tab and types DEPLOY to confirm.
+# Uses a zone-scoped Cloudflare token from org/repo secrets (never printed).
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DEPLOY to apply changes to the LIVE norcalcarbmobile.com zone"
+        required: true
+        default: "no"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm gate
+        if: ${{ inputs.confirm != 'DEPLOY' }}
+        run: |
+          echo "::error::Not confirmed — re-run and type DEPLOY in the confirm box."
+          exit 1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Deploy to Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: bash seo/deploy-cloudflare.sh
