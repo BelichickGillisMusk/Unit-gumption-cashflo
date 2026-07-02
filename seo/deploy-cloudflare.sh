@@ -13,8 +13,8 @@ TOKEN="${CLOUDFLARE_API_TOKEN:-${CF_API_TOKEN:-${CLOUDFLARE_TOKEN:-}}}"
 ZONE_ID="${CLOUDFLARE_ZONE_ID:-}"
 
 if [ -z "$TOKEN" ]; then
-  echo "::error::No Cloudflare token. Grant an org/repo secret named CLOUDFLARE_API_TOKEN (or CF_API_TOKEN / CLOUDFLARE_TOKEN) to this repo, scoped to the ${ZONE_NAME} zone with Snippets:Edit, Zone Settings:Edit, Cache Purge:Purge, Zone:Read."
-  exit 1
+  echo "::warning::No Cloudflare token found — skipping deploy. To enable, add an org/repo secret named CLOUDFLARE_API_TOKEN (or CF_API_TOKEN / CLOUDFLARE_TOKEN) scoped to the ${ZONE_NAME} zone with Snippets:Edit, Zone Settings:Edit, Cache Purge:Purge, Zone:Read."
+  exit 0
 fi
 
 cf() { local m="$1" p="$2"; shift 2; curl -sS -X "$m" "$API$p" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" "$@"; }
