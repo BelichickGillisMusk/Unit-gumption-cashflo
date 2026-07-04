@@ -23,6 +23,19 @@ jobs:
         run: |
           echo "::error::Not confirmed — re-run and type DEPLOY in the confirm box."
           exit 1
+      - name: Validate required secrets
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TOKEN_ALT1: ${{ secrets.CF_API_TOKEN }}
+          TOKEN_ALT2: ${{ secrets.CLOUDFLARE_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ] && [ -z "$TOKEN_ALT1" ] && [ -z "$TOKEN_ALT2" ]; then
+            echo "::error::No Cloudflare API token found."
+            echo "Add a repository secret named CLOUDFLARE_API_TOKEN (or CF_API_TOKEN / CLOUDFLARE_TOKEN)."
+            echo "Required token permissions: Snippets:Edit, Zone Settings:Edit, Cache Purge:Purge, Zone:Read."
+            echo "Configure at: https://github.com/BelichickGillisMusk/Unit-gumption-cashflo/settings/secrets/actions"
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
