@@ -1,0 +1,42 @@
+name: Reassign Cloudflare Worker domains
+
+# MANUAL ONLY — never auto-deploys. Audits every hostname currently bound to
+# a Worker; only applies changes when someone triggers it from the Actions
+# tab and types DEPLOY to confirm.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type DEPLOY to attach norcalcarbmobile.com to norcalcarbmobile-site and detach mobileovitest.com. Leave as 'no' to just audit current bindings."
+        required: true
+        default: "no"
+
+permissions:
+  contents: read
+
+jobs:
+  reassign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required secrets
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TOKEN_ALT1: ${{ secrets.CF_API_TOKEN }}
+          TOKEN_ALT2: ${{ secrets.CLOUDFLARE_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ] && [ -z "$TOKEN_ALT1" ] && [ -z "$TOKEN_ALT2" ]; then
+            echo "::error::No Cloudflare API token found."
+            echo "Add a repository secret named CLOUDFLARE_API_TOKEN (or CF_API_TOKEN / CLOUDFLARE_TOKEN)."
+            echo "Required token permissions: Account Workers Scripts:Edit, Zone:Edit, Zone:Read (for norcalcarbmobile.com and mobileovitest.com zones)."
+            echo "Configure at: https://github.com/BelichickGillisMusk/Unit-gumption-cashflo/settings/secrets/actions"
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - name: Reassign Worker domains
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: bash seo/reassign-worker-domains.sh
